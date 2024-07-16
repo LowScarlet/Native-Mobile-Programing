@@ -1,0 +1,66 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Buku {
+  id           Int          @id @default(autoincrement())
+  kode         String       @unique
+  judul        String
+  tahunTerbit  Int
+  halaman      Int
+  deskripsi    String?
+  bahasa       String
+  penulisId    Int?
+  kategoriId   Int?
+  penerbitId   Int?
+  penulis      Penulis?     @relation(fields: [penulisId], references: [id], onDelete: SetNull)
+  kategori     Kategori?    @relation(fields: [kategoriId], references: [id], onDelete: SetNull)
+  penerbit     Penerbit?    @relation(fields: [penerbitId], references: [id], onDelete: SetNull)
+  peminjaman   Peminjaman[]
+}
+
+model Penulis {
+  id              Int     @id @default(autoincrement())
+  kode            String  @unique
+  nama            String  @unique
+  tanggalLahir    String
+  biografi        String?
+  kewarganegaraan String
+  penghargaan     String?
+  buku            Buku[]
+}
+
+model Kategori {
+  id        Int     @id @default(autoincrement())
+  kode      String  @unique
+  nama      String  @unique
+  deskripsi String?
+  buku      Buku[]
+}
+
+model Peminjaman {
+  id                Int     @id @default(autoincrement())
+  tanggalPinjam     String  @default("")
+  tanggalKembali    String?
+  tanggalJatuhTempo String
+  status            String
+  denda             Float   @default(0.0)
+  bukuId            Int
+  buku              Buku    @relation(fields: [bukuId], references: [id], onDelete: Cascade)
+}
+
+model Penerbit {
+  id           Int    @id @default(autoincrement())
+  kode         String @unique
+  nama         String @unique
+  lokasi       String
+  tahunBerdiri Int
+  emailKontak  String
+  nomorTelepon String
+  buku         Buku[]
+}

@@ -1,0 +1,23 @@
+{
+  "name": "backend",
+  "version": "0.1.0",
+  "main": "Start.js",
+  "scripts": {
+    "vercel-build": "prisma generate",
+    "start": "node src/Start.js",
+    "dev": "nodemon src/Start.js",
+    "lint": "eslint --fix src",
+    "test": "mocha --exit",
+    "postinstall": "prisma generate"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@prisma/client": "^5.5.2",
+    "dotenv": "^16.0.3",
+    "express": "^4.19.2",
+    "express-validator": "^7.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
+}

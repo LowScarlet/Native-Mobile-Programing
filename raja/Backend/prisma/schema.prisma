@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Pelanggan {
+  id        Int         @id @default(autoincrement())
+  nama      String
+  alamat    String
+  nomorHp   String
+  email     String?
+  pemesanan Pemesanan[]
+}
+
+model Pemasok {
+  id      Int     @id @default(autoincrement())
+  nama    String
+  alamat  String
+  nomorHp String
+  email   String?
+  galon   Galon[]
+}
+
+model Karyawan {
+  id          Int           @id @default(autoincrement())
+  nama        String
+  alamat      String
+  nomorHp     String
+  email       String?
+  pengantaran Pengantaran[]
+}
+
+model Pemesanan {
+  id          Int          @id @default(autoincrement())
+  tanggal     String
+  pelangganId Int
+  galonId     Int
+  jumlah      Int
+  status      String
+  pengantaran Pengantaran?
+
+  pelanggan Pelanggan @relation(fields: [pelangganId], references: [id])
+  galon     Galon     @relation(fields: [galonId], references: [id])
+}
+
+model Pengantaran {
+  id          Int    @id @default(autoincrement())
+  tanggal     String
+  karyawanId  Int
+  pemesananId Int    @unique
+  status      String
+
+  karyawan  Karyawan  @relation(fields: [karyawanId], references: [id])
+  pemesanan Pemesanan @relation(fields: [pemesananId], references: [id])
+}
+
+model Galon {
+  id        Int    @id @default(autoincrement())
+  nama      String
+  harga     Float
+  stok      Int
+  pemasokId Int
+
+  pemasok   Pemasok     @relation(fields: [pemasokId], references: [id])
+  pemesanan Pemesanan[]
+}

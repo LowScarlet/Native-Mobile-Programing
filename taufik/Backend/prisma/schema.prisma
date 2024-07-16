@@ -1,0 +1,67 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Konsumen {
+  id          Int         @id @default(autoincrement())
+  nama        String
+  alamat      String
+  email       String?
+  nomorHp     String?
+  pesanan     Pesanan[]
+  reservasi   Reservasi[]
+}
+
+model Meja {
+  id          Int         @id @default(autoincrement())
+  nomor       Int         @unique
+  kapasitas   Int
+  lokasi      String?
+  reservasi   Reservasi[]
+}
+
+model Menu {
+  id          Int           @id @default(autoincrement())
+  kode        String        @unique
+  nama        String
+  deskripsi   String?
+  harga       Float
+  itemPesanan ItemPesanan[]
+  kategori    String?
+}
+
+model Pesanan {
+  id           Int           @id @default(autoincrement())
+  konsumenId   Int
+  jumlahTotal  Float
+  tanggal      String
+  konsumen     Konsumen      @relation(fields: [konsumenId], references: [id])
+  itemPesanan  ItemPesanan[]
+  catatan      String?
+}
+
+model Reservasi {
+  id          Int      @id @default(autoincrement())
+  konsumenId  Int
+  mejaId      Int
+  tanggal     String
+  waktu       String
+  konsumen    Konsumen  @relation(fields: [konsumenId], references: [id])
+  meja        Meja      @relation(fields: [mejaId], references: [id])
+  catatan     String?
+}
+
+model ItemPesanan {
+  id          Int     @id @default(autoincrement())
+  pesananId   Int
+  menuId      Int
+  kuantitas   Int
+  pesanan     Pesanan @relation(fields: [pesananId], references: [id])
+  menu        Menu    @relation(fields: [menuId], references: [id])
+  catatan     String?
+}

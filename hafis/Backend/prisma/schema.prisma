@@ -1,0 +1,60 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Pelapor {
+  id                Int                 @id @default(autoincrement())
+  email             String              @unique
+  nama              String
+  telepon           String
+  laporanKehilangan LaporanKehilangan[]
+  laporanPenemuan   LaporanPenemuan[]
+}
+
+model Barang {
+  id                Int                 @id @default(autoincrement())
+  nama              String
+  deskripsi         String
+  kategoriId        Int
+  lokasiId          Int
+  kategoriBarang    KategoriBarang      @relation(fields: [kategoriId], references: [id])
+  lokasi            Lokasi              @relation(fields: [lokasiId], references: [id])
+  laporanKehilangan LaporanKehilangan[]
+  laporanPenemuan   LaporanPenemuan[]
+}
+
+model KategoriBarang {
+  id     Int      @id @default(autoincrement())
+  nama   String
+  barang Barang[]
+}
+
+model Lokasi {
+  id     Int      @id @default(autoincrement())
+  nama   String
+  alamat String
+  barang Barang[]
+}
+
+model LaporanKehilangan {
+  id        Int     @id @default(autoincrement())
+  tanggal   String
+  barangId  Int
+  pelaporId Int
+  barang    Barang  @relation(fields: [barangId], references: [id])
+  pelapor   Pelapor @relation(fields: [pelaporId], references: [id])
+}
+
+model LaporanPenemuan {
+  id        Int     @id @default(autoincrement())
+  tanggal   String
+  barangId  Int
+  pelaporId Int
+  barang    Barang  @relation(fields: [barangId], references: [id])
+  pelapor   Pelapor @relation(fields: [pelaporId], references: [id])
+}

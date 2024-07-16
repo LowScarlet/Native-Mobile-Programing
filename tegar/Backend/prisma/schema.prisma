@@ -1,0 +1,107 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Portfolio {
+  id          Int                  @id @default(autoincrement())
+  //
+  title       String               @unique
+  description String?
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+  //
+  detail      PortfolioDetail?
+  educations  PortfolioEducation[]
+  projects    PortfolioProject[]
+  works       PortfolioWork[]
+}
+
+model PortfolioDetail {
+  id          Int       @id @default(autoincrement())
+  //
+  fullName    String
+  about       String?
+  website     String?
+  phone       String?
+  email       String?
+  portfolioId Int       @unique
+  //
+  portfolio   Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+}
+
+model PortfolioProject {
+  id          Int       @id @default(autoincrement())
+  //
+  title       String
+  content     String?
+  link        String?
+  startYear   Int?
+  portfolioId Int
+  //
+  portfolio   Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+}
+
+model PortfolioEducation {
+  id            Int         @id @default(autoincrement())
+  //
+  score         Float?
+  startYear     Int?
+  endYear       Int?
+  isActive      Boolean     @default(false)
+  portfolioId   Int
+  institutionId Int?
+  departmentId  Int?
+  //
+  portfolio     Portfolio   @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+  institution   Institution? @relation(fields: [institutionId], references: [id], onDelete: SetNull)
+  department    Department?  @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+}
+
+model Institution {
+  id                 Int                  @id @default(autoincrement())
+  //
+  name               String               @unique
+  description        String?
+  accreditation      String               @default("A")
+  website            String?
+  //
+  portfolioEducation PortfolioEducation[]
+}
+
+model Department {
+  id                 Int                  @id @default(autoincrement())
+  //
+  name               String               @unique
+  description        String?
+  degree             String?
+  //
+  portfolioEducation PortfolioEducation[]
+}
+
+model PortfolioWork {
+  id          Int       @id @default(autoincrement())
+  //
+  name        String
+  description String?
+  isActive    Boolean   @default(false)
+  companyId   Int?
+  portfolioId Int
+  //
+  portfolio   Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+  company     Company?   @relation(fields: [companyId], references: [id], onDelete: SetNull)
+}
+
+model Company {
+  id            Int             @id @default(autoincrement())
+  name          String          @unique
+  description   String?
+  location      String?
+  website       String?
+  industry      String?
+  portfolioWork PortfolioWork[]
+}
