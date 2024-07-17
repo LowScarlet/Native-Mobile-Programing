@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Stok {
+  id            Int            @id @default(autoincrement())
+  jumlah        Int
+  kategoriId    Int?
+  kategori      Kategori?      @relation(fields: [kategoriId], references: [id])
+  pencatatans   Pencatatan[]
+  pengembalians Pengembalian[]
+}
+
+model Pengembalian {
+  id                 Int               @id @default(autoincrement())
+  waktuPengembalian  String
+  harga              Float
+  pencatatanId       Int?
+  stokId             Int?
+  metodePembayaranId Int?
+  petugasId          Int?
+  pencatatan         Pencatatan?       @relation(fields: [pencatatanId], references: [id])
+  stok               Stok?             @relation(fields: [stokId], references: [id])
+  metodePembayaran   MetodePembayaran? @relation(fields: [metodePembayaranId], references: [id])
+  petugas            Petugas?          @relation(fields: [petugasId], references: [id])
+}
+
+model Pencatatan {
+  id            Int            @id @default(autoincrement())
+  nama          String
+  nomorHp       String
+  jumlah        Int
+  mulaiSewa     String
+  petugasId     Int?
+  lokasiId      Int?
+  stokId        Int?
+  petugas       Petugas?       @relation(fields: [petugasId], references: [id])
+  lokasi        Lokasi?        @relation(fields: [lokasiId], references: [id])
+  stok          Stok?          @relation(fields: [stokId], references: [id])
+  pengembalians Pengembalian[]
+}
+
+model Kategori {
+  id        Int    @id @default(autoincrement())
+  nama      String
+  kapasitas Int
+  stoks     Stok[]
+}
+
+model Petugas {
+  id            Int            @id @default(autoincrement())
+  nama          String
+  alamat        String
+  nomorHp       String
+  pencatatans   Pencatatan[]
+  pengembalians Pengembalian[]
+}
+
+model MetodePembayaran {
+  id            Int            @id @default(autoincrement())
+  tipe          String
+  keterangan    String
+  pengembalians Pengembalian[]
+}
+
+model Lokasi {
+  id          Int          @id @default(autoincrement())
+  nama        String
+  alamat      String
+  pencatatans Pencatatan[]
+}
